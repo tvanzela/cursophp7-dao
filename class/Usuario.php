@@ -11,7 +11,7 @@ class Usuario {
 		return $this->idusuario;
 	}
 
-	public function setIdusuario(){
+	public function setIdusuario($value){
 		$this->idusuario = $value;
 	}
 
@@ -19,7 +19,7 @@ class Usuario {
 		return $this->deslogin;
 	}
 
-	public function setDeslogin(){
+	public function setDeslogin($value){
 		$this->deslogin = $value;
 	}
 
@@ -27,7 +27,7 @@ class Usuario {
 		return $this->dessenha;
 	}
 
-	public function setDessenha(){
+	public function setDessenha($value){
 		$this->dessenha = $value;
 	}
 
@@ -35,7 +35,7 @@ class Usuario {
 		return $this->dtcadastro;
 	}
 
-	public function setDtcadastro(){
+	public function setDtcadastro($value){
 		$this->dtcadastro = $value;
 	}
 
@@ -43,7 +43,7 @@ class Usuario {
 
 		$sql = new Sql();
 
-		$results = $sql->select("SELECT * FROM tb_usuarios WHERE idusuario = :ID", array(
+		$results = $sql->select("SELECT * FROM tb_usuario WHERE idusuario = :ID", array(
 			":ID"=>$id
 		));
 
@@ -57,6 +57,50 @@ class Usuario {
 			$this->setDtcadastro(new DateTime($row['dtcadastro']));
 
 		}
+	}
+
+	public static function getList(){
+
+		$sql = new Sql();
+
+		return $sql->select("SELECT * FROM tb_usuario ORDER BY deslogin;");
+
+	}
+
+	public static function search($login){
+
+		$sql = new Sql();
+
+		return $sql->select("SELECT * FROM tb_usuario WHERE deslogin LIKE :SEARCH ORDER BY deslogin", array(
+			':SEARCH'=>"%".$login."%"
+		));
+	}
+
+	public function login($login, $password){
+
+		$sql = new Sql();
+
+		$results = $sql->select("SELECT * FROM tb_usuario WHERE deslogin = :LOGIN AND dessenha = :PASSWORD", array(
+			":LOGIN"=>$login,
+			":PASSWORD"=>$password
+		));
+
+		if (count($results) > 0){
+
+			$row = $results[0];
+
+			$this->setIdusuario($row['idusuario']);
+			$this->setDeslogin($row['deslogin']);
+			$this->setDessenha($row['dessenha']);
+			$this->setDtcadastro(new DateTime($row['dtcadastro']));
+
+		} else{
+
+			throw new Exception("Usuario e/ou senha invalidos");
+			
+
+		}
+
 	}
 
 	public function __toString(){
